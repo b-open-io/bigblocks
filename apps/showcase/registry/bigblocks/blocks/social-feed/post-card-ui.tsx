@@ -88,6 +88,21 @@ function getInitials(name: string): string {
   return name.slice(0, 2).toUpperCase()
 }
 
+/**
+ * Whether an event originated on a control that handles its own activation.
+ *
+ * The card is clickable as a whole, but it also hosts buttons and a caller
+ * supplied like slot. Rather than asking every child to stop propagation —
+ * which the like slot cannot do, since the caller owns it — the card declines
+ * clicks that started on an interactive element.
+ */
+function isInteractive(target: EventTarget | null): boolean {
+  return (
+    target instanceof Element &&
+    target.closest("button, a, input, select, textarea, [role='button']") !== null
+  )
+}
+
 /** Build an ORDFS URL for embedded media */
 function getMediaUrl(outpoint: string): string {
   return `https://ordfs.network/content/${outpoint}`
@@ -120,16 +135,23 @@ export function PostCardUI({
           "cursor-pointer hover:bg-accent/50 transition-colors duration-150",
         className
       )}
-      onClick={onPostClick ? () => onPostClick(post) : undefined}
+      onClick={
+        onPostClick
+          ? (e) => {
+              if (isInteractive(e.target)) return
+              onPostClick(post)
+            }
+          : undefined
+      }
       role={isClickable ? "button" : undefined}
       tabIndex={isClickable ? 0 : undefined}
       onKeyDown={
         isClickable
           ? (e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault()
-                onPostClick?.(post)
-              }
+              if (e.key !== "Enter" && e.key !== " ") return
+              if (isInteractive(e.target)) return
+              e.preventDefault()
+              onPostClick?.(post)
             }
           : undefined
       }
@@ -212,20 +234,7 @@ export function PostCardUI({
         {/* Action bar */}
         <div className="flex items-center gap-1 pt-1 -ml-1.5">
           {/* Like button slot or default */}
-          {likeButtonSlot ? (
-            // Consumer-supplied controls stop the click here, the same way the
-            // avatar and author buttons above do, so liking never navigates.
-            // biome-ignore lint/a11y/noStaticElementInteractions: the handlers
-            // only stop propagation; the slot's own control carries the
-            // semantics, and adding a role here would shadow it.
-            <span
-              className="contents"
-              onClick={(e) => e.stopPropagation()}
-              onKeyDown={(e) => e.stopPropagation()}
-            >
-              {likeButtonSlot}
-            </span>
-          ) : (
+          {likeButtonSlot ?? (
             <span
               className={cn(
                 "inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs text-muted-foreground",
