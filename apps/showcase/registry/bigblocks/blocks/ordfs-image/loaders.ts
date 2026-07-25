@@ -1,12 +1,3 @@
-/**
- * Image loaders for on-chain ORDFS content.
- *
- * ORDFS serves inscriptions at their original size — a single NFT is routinely
- * several megabytes — and has no resizing of its own. A loader rewrites the
- * content URL to point at whatever optimizer the host already provides, so the
- * blocks stay plain React with no framework-specific imports.
- */
-
 export interface OrdfsImageLoaderArgs {
   /** Absolute URL of the original ORDFS content */
   src: string
@@ -16,7 +7,15 @@ export interface OrdfsImageLoaderArgs {
   quality: number
 }
 
-/** Rewrites an ORDFS content URL to an optimized one */
+/**
+ * Rewrites an ORDFS content URL to an optimized one.
+ *
+ * ORDFS serves inscriptions at their original size — a single NFT is routinely
+ * several megabytes — so a grid of them is the dominant cost in any wallet or
+ * marketplace UI. A loader points that URL at whatever optimizer the host
+ * already provides, which keeps these blocks plain React with no
+ * framework-specific imports that would break a Vite or Astro consumer.
+ */
 export type OrdfsImageLoader = (args: OrdfsImageLoaderArgs) => string
 
 /**
