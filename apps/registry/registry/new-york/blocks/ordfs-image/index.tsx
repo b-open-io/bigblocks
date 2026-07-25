@@ -15,7 +15,7 @@ import {
 export type { OrdfsImageLoader, OrdfsImageLoaderArgs } from "./loaders"
 export {
   createCloudflareImageLoader,
-  createOrdfsThumbLoader,
+  createOrdfsImageLoader,
   DEFAULT_IMAGE_QUALITY,
   DEFAULT_IMAGE_WIDTHS,
   vercelImageLoader,
