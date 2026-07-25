@@ -33,6 +33,8 @@ export interface MarketGridUIProps {
   onListingClick?: (outpoint: string) => void
   /** Callback to handle external links (e.g. open in system browser from a WebView) */
   onExternalLink?: (url: string) => void
+  /** Base URL for ORDFS content resolution (default: https://ordfs.network/content) */
+  ordfsContentBase?: string
   /** Number of skeleton cards to show during loading */
   skeletonCount?: number
   /** Optional CSS class name */
@@ -43,7 +45,7 @@ export interface MarketGridUIProps {
 // Constants
 // ---------------------------------------------------------------------------
 
-const ORDFS_CONTENT_URL = "https://ordfs.network/content"
+const DEFAULT_ORDFS_CONTENT_URL = "https://ordfs.network/content"
 
 // ---------------------------------------------------------------------------
 // Skeleton grid
@@ -82,6 +84,7 @@ export function MarketGridUI({
   onBuy,
   onListingClick,
   onExternalLink,
+  ordfsContentBase = DEFAULT_ORDFS_CONTENT_URL,
   skeletonCount = 8,
   className,
 }: MarketGridUIProps) {
@@ -151,7 +154,7 @@ export function MarketGridUI({
             price={listing.price}
             seller={listing.seller}
             contentType={listing.contentType}
-            thumbnailUrl={`${ORDFS_CONTENT_URL}/${listing.origin}`}
+            thumbnailUrl={`${ordfsContentBase}/${listing.origin}`}
             name={listing.name}
             onBuy={onBuy}
             onListingClick={onListingClick}

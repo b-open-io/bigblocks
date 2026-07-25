@@ -10,6 +10,7 @@ import {
   type GetHistoryFn,
   type GetOrdinalsFn,
   type GetTokenBalancesFn,
+  type ImageLoaderFn,
   type OnExternalLinkFn,
 } from "./bigblocks-context"
 
@@ -28,6 +29,7 @@ export type {
   GetHistoryFn,
   GetOrdinalsFn,
   GetTokenBalancesFn,
+  ImageLoaderFn,
   OnExternalLinkFn,
 } from "./bigblocks-context"
 export {
@@ -72,6 +74,12 @@ export interface BigBlocksProviderProps {
    * this instead of `window.open` for outbound links.
    */
   onExternalLink?: OnExternalLinkFn
+  /**
+   * Image optimizer for on-chain ORDFS content. When provided, `OrdfsImage`
+   * and every block that renders inscriptions route through it instead of
+   * loading the full-size original.
+   */
+  imageLoader?: ImageLoaderFn
   /** Child components that can access the BigBlocks context */
   children: React.ReactNode
 }
@@ -116,6 +124,7 @@ export function BigBlocksProvider({
   getTokenBalances,
   getHistory,
   onExternalLink,
+  imageLoader,
   children,
 }: BigBlocksProviderProps) {
   const value = useMemo<BigBlocksContextValue>(
@@ -127,8 +136,18 @@ export function BigBlocksProvider({
       getTokenBalances,
       getHistory,
       onExternalLink,
+      imageLoader,
     }),
-    [apiUrl, ordfsUrl, getBalance, getOrdinals, getTokenBalances, getHistory, onExternalLink]
+    [
+      apiUrl,
+      ordfsUrl,
+      getBalance,
+      getOrdinals,
+      getTokenBalances,
+      getHistory,
+      onExternalLink,
+      imageLoader,
+    ]
   )
 
   return (

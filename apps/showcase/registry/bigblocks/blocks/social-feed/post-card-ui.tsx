@@ -81,8 +81,9 @@ function getInitials(name: string): string {
   // If it looks like a truncated hash/address, use the first two chars
   if (name.includes("...")) return name.slice(0, 2).toUpperCase()
   const parts = name.trim().split(/\s+/)
-  if (parts.length >= 2) {
-    return `${parts[0][0]}${parts[1][0]}`.toUpperCase()
+  const [firstPart, secondPart] = parts
+  if (firstPart && secondPart) {
+    return `${firstPart.charAt(0)}${secondPart.charAt(0)}`.toUpperCase()
   }
   return name.slice(0, 2).toUpperCase()
 }
@@ -211,7 +212,20 @@ export function PostCardUI({
         {/* Action bar */}
         <div className="flex items-center gap-1 pt-1 -ml-1.5">
           {/* Like button slot or default */}
-          {likeButtonSlot ?? (
+          {likeButtonSlot ? (
+            // Consumer-supplied controls stop the click here, the same way the
+            // avatar and author buttons above do, so liking never navigates.
+            // biome-ignore lint/a11y/noStaticElementInteractions: the handlers
+            // only stop propagation; the slot's own control carries the
+            // semantics, and adding a role here would shadow it.
+            <span
+              className="contents"
+              onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => e.stopPropagation()}
+            >
+              {likeButtonSlot}
+            </span>
+          ) : (
             <span
               className={cn(
                 "inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs text-muted-foreground",

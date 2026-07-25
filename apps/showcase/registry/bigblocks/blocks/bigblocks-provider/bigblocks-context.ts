@@ -81,6 +81,19 @@ export type GetHistoryFn = (
 /** Handler for opening external links (useful in desktop apps) */
 export type OnExternalLinkFn = (url: string) => void
 
+/**
+ * Rewrites an ORDFS content URL to an optimized one.
+ *
+ * Structurally identical to `OrdfsImageLoader` in the `ordfs-image` block and
+ * declared here so the provider does not depend on it. See that block for
+ * ready-made loaders (Vercel, Cloudflare, ORDFS thumbnails).
+ */
+export type ImageLoaderFn = (args: {
+  src: string
+  width: number
+  quality: number
+}) => string
+
 /** Context value provided by BigBlocksProvider */
 export interface BigBlocksContextValue {
   /** 1sat-stack API base URL */
@@ -97,6 +110,8 @@ export interface BigBlocksContextValue {
   getHistory?: GetHistoryFn
   /** External link handler for desktop apps or custom navigation */
   onExternalLink?: OnExternalLinkFn
+  /** Image optimizer for on-chain content — when set, OrdfsImage routes through it */
+  imageLoader?: ImageLoaderFn
 }
 
 // ---------------------------------------------------------------------------

@@ -22,6 +22,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
+import { OrdfsImage } from "@/registry/new-york/blocks/ordfs-image"
 import type { OrdinalOutput } from "./use-ordinals-grid"
 
 // ---------------------------------------------------------------------------
@@ -111,14 +112,14 @@ function OrdinalThumbnail({ origin, name, outpoint, ordfsBase }: OrdinalThumbnai
       {isImageLoading && (
         <Skeleton className="absolute inset-0 h-full w-full rounded-none" />
       )}
-      <img
+      <OrdfsImage
         src={src}
         alt={alt}
+        sizes="(min-width: 1280px) 12vw, (min-width: 768px) 25vw, 50vw"
         className={cn(
           "h-full w-full object-cover transition-transform duration-200 group-hover:scale-105",
           isImageLoading && "invisible",
         )}
-        loading="lazy"
         onError={handleError}
         onLoad={handleLoad}
       />

@@ -170,8 +170,9 @@ export function useIdentitySelector({
         if (!cancelled) {
           setIdentities(entries)
           // Default active to first if none set
-          if (!activeBapIdProp && entries.length > 0) {
-            setActiveBapId(entries[0].bapId)
+          const first = entries[0]
+          if (!activeBapIdProp && first) {
+            setActiveBapId(first.bapId)
           }
         }
       } catch (err) {

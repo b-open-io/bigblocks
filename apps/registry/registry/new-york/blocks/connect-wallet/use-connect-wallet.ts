@@ -9,7 +9,7 @@ export interface UseConnectWalletReturn {
   /** Current wallet connection status */
   status: string
   /** Identity key when connected */
-  identityKey: string | undefined
+  identityKey: string | null | undefined
   /** Whether the provider selection dialog is open */
   dialogOpen: boolean
   /** Set the dialog open state */

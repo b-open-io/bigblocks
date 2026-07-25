@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
+import { OrdfsImage } from "@/registry/bigblocks/blocks/ordfs-image"
 
 // ---------------------------------------------------------------------------
 // Types
@@ -115,9 +116,10 @@ export function ListingCardUI({
             {!imgLoaded && (
               <Skeleton className="absolute inset-0 h-full w-full" />
             )}
-            <img
+            <OrdfsImage
               src={thumbnailUrl}
               alt={name ?? "Ordinal listing"}
+              sizes="(min-width: 1280px) 20vw, (min-width: 768px) 33vw, 50vw"
               className={cn(
                 "h-full w-full object-cover transition-transform duration-300 group-hover:scale-105",
                 !imgLoaded && "opacity-0",

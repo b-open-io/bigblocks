@@ -84,7 +84,7 @@ export function ConnectWallet({
       className={className}
       connectLabel={connectLabel}
       status={hook.status}
-      identityKey={hook.identityKey}
+      identityKey={hook.identityKey ?? undefined}
       dialogOpen={hook.dialogOpen}
       setDialogOpen={hook.setDialogOpen}
       gradient={hook.gradient}

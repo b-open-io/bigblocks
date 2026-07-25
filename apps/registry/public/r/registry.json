@@ -746,7 +746,8 @@
         "card",
         "badge",
         "skeleton",
-        "avatar"
+        "avatar",
+        "https://registry.bigblocks.dev/r/ordfs-image.json"
       ],
       "files": [
         {
@@ -806,7 +807,8 @@
         "badge",
         "dropdown-menu",
         "skeleton",
-        "scroll-area"
+        "scroll-area",
+        "https://registry.bigblocks.dev/r/ordfs-image.json"
       ],
       "files": [
         {
@@ -1583,6 +1585,32 @@
       ],
       "categories": [
         "developer"
+      ]
+    },
+    {
+      "name": "ordfs-image",
+      "type": "registry:block",
+      "title": "ORDFS Image",
+      "description": "Image element for on-chain ORDFS content that routes through the host image optimizer. Ships Vercel, Cloudflare, and ORDFS-thumbnail loaders, and renders the original unchanged when none is configured.",
+      "author": "Satchmo",
+      "dependencies": [],
+      "registryDependencies": [
+        "https://registry.bigblocks.dev/r/bigblocks-provider.json"
+      ],
+      "files": [
+        {
+          "path": "registry/new-york/blocks/ordfs-image/index.tsx",
+          "type": "registry:block",
+          "target": "~/components/blocks/ordfs-image/index.tsx"
+        },
+        {
+          "path": "registry/new-york/blocks/ordfs-image/loaders.ts",
+          "type": "registry:component",
+          "target": "~/components/blocks/ordfs-image/loaders.ts"
+        }
+      ],
+      "categories": [
+        "infrastructure"
       ]
     },
     {

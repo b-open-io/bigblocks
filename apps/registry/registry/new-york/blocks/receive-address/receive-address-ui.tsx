@@ -96,7 +96,7 @@ function AddressPattern({
     for (let row = 0; row < gridSize; row++) {
       for (let col = 0; col < Math.floor(gridSize / 2); col++) {
         const mirrorCol = gridSize - 1 - col
-        result[row * gridSize + mirrorCol] = result[row * gridSize + col]
+        result[row * gridSize + mirrorCol] = result[row * gridSize + col] ?? false
       }
     }
 
