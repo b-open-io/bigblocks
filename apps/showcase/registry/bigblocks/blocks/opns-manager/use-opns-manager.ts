@@ -1,9 +1,9 @@
 import {
   createContext,
-  getOpnsNames,
+  deregisterOpns,
+  listOpns,
   type OpnsOperationResponse,
-  opnsDeregister,
-  opnsRegister,
+  registerOpns,
 } from "@1sat/actions"
 import { useWallet } from "@1sat/react"
 import { useCallback, useEffect, useRef, useState } from "react"
@@ -14,6 +14,8 @@ import { useCallback, useEffect, useRef, useState } from "react"
 
 /** An OpNS name owned by the connected wallet */
 export interface OpnsName {
+  /** Tracking id of the OpNS row in the wallet's OPNS basket */
+  id: string
   /** Outpoint of the OpNS ordinal (txid_vout) */
   outpoint: string
   /** The human-readable name string */
@@ -71,6 +73,11 @@ function isRegistered(tags: string[]): boolean {
   return tags.some((t) => t === "opns:published")
 }
 
+/** Basket-row tracking id from output tags; rows without one cannot be operated on */
+function extractIdFromTags(tags: string[]): string | undefined {
+  return tags.find((t) => t.startsWith("id:"))
+}
+
 // ---------------------------------------------------------------------------
 // Hook
 // ---------------------------------------------------------------------------
@@ -114,18 +121,23 @@ export function useOpnsManager(
 
     try {
       const ctx = createContext(wallet)
-      const result = await getOpnsNames.execute(ctx, {})
+      const result = await listOpns.execute(ctx, { includeTags: true })
 
       if (controller.signal.aborted) return
 
-      const parsed: OpnsName[] = result.outputs.map((output) => {
+      const parsed: OpnsName[] = result.outputs.flatMap((output) => {
         const tags = output.tags ?? []
-        return {
-          outpoint: output.outpoint,
-          name: extractNameFromTags(tags),
-          registered: isRegistered(tags),
-          identityKey: undefined, // Identity key is resolved server-side
-        }
+        const id = extractIdFromTags(tags)
+        if (!id) return []
+        return [
+          {
+            id,
+            outpoint: output.outpoint,
+            name: extractNameFromTags(tags),
+            registered: isRegistered(tags),
+            identityKey: undefined, // Identity key is resolved server-side
+          },
+        ]
       })
 
       setNames(parsed)
@@ -154,21 +166,7 @@ export function useOpnsManager(
 
       try {
         const ctx = createContext(wallet)
-
-        // Resolve the full output from the wallet for this outpoint
-        const listResult = await getOpnsNames.execute(ctx, {})
-        const ordinal = listResult.outputs.find(
-          (o) => o.outpoint === name.outpoint
-        )
-
-        if (!ordinal) {
-          const err = new Error(`OpNS name "${name.name}" not found in wallet`)
-          setError(err)
-          onError?.(err)
-          return { error: err.message }
-        }
-
-        const result = await opnsRegister.execute(ctx, { ordinal })
+        const result = await registerOpns.execute(ctx, { id: name.id })
 
         if (result.error) {
           const err = new Error(result.error)
@@ -207,20 +205,7 @@ export function useOpnsManager(
 
       try {
         const ctx = createContext(wallet)
-
-        const listResult = await getOpnsNames.execute(ctx, {})
-        const ordinal = listResult.outputs.find(
-          (o) => o.outpoint === name.outpoint
-        )
-
-        if (!ordinal) {
-          const err = new Error(`OpNS name "${name.name}" not found in wallet`)
-          setError(err)
-          onError?.(err)
-          return { error: err.message }
-        }
-
-        const result = await opnsDeregister.execute(ctx, { ordinal })
+        const result = await deregisterOpns.execute(ctx, { id: name.id })
 
         if (result.error) {
           const err = new Error(result.error)

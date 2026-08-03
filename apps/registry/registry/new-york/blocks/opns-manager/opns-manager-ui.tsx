@@ -29,6 +29,8 @@ import { cn } from "@/lib/utils"
 
 /** An OpNS name to display */
 export interface OpnsNameDisplay {
+  /** Tracking id of the OpNS row in the wallet's OPNS basket */
+  id: string
   /** Outpoint of the OpNS ordinal (txid_vout) */
   outpoint: string
   /** The human-readable name string */

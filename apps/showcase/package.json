@@ -11,9 +11,9 @@
     "postinstall": "fumadocs-mdx"
   },
   "dependencies": {
-    "@1sat/actions": "^0.0.166",
-    "@1sat/connect": "^0.0.70",
-    "@1sat/react": "^0.0.67",
+    "@1sat/actions": "^0.0.196",
+    "@1sat/connect": "^0.0.87",
+    "@1sat/react": "^0.0.84",
     "@radix-ui/react-avatar": "^1.2.2",
     "@radix-ui/react-checkbox": "^1.3.7",
     "@radix-ui/react-collapsible": "^1.1.16",
