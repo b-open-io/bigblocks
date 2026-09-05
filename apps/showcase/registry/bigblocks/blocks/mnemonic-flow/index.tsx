@@ -40,7 +40,7 @@ export interface MnemonicFlowProps {
   mode: UseMnemonicFlowOptions["mode"]
   /** Pre-populated words for display/verify modes */
   words?: string[]
-  /** Number of words (12 or 24, default: 12) */
+  /** Number of words (12, 15, 18, 21, or 24; default: 12) */
   wordCount?: UseMnemonicFlowOptions["wordCount"]
   /** Called when the flow completes with the final word list */
   onComplete?: (words: string[]) => void
@@ -60,13 +60,14 @@ export interface MnemonicFlowProps {
 
 /**
  * Multi-mode seed phrase display and input block.
+ * Does not generate words, validate mnemonic checksums, or create wallets.
  *
  * Composes `useMnemonicFlow` (logic) with `MnemonicFlowUi` (presentation)
  * into a single, ready-to-use component.
  *
  * Modes:
  * - **display**: Read-only numbered grid with copy-all button
- * - **create**: Generated words + display + confirmation checkbox
+ * - **create**: Supplied words + display + confirmation checkbox
  * - **import**: Editable input grid for entering words
  * - **verify**: Show 2 random positions, user must type the correct words
  *

@@ -41,6 +41,8 @@ export interface MnemonicGridUiProps {
   blankValues?: Record<number, string>
   /** Called when a blank value changes (index, value) */
   onBlankChange?: (index: number, value: string) => void
+  /** Render only verification blanks; omit all expected words from the DOM. */
+  onlyBlankPositions?: boolean
   /** Additional CSS classes */
   className?: string
 }
@@ -80,12 +82,12 @@ function WordSlot({
       ) : (
         <Input
           type="text"
-          value={slotMode === "blank" ? undefined : word}
-          defaultValue={slotMode === "blank" ? "" : undefined}
+          value={word}
           onChange={handleChange}
-          className="h-auto border-0 bg-transparent p-0 text-sm font-mono shadow-none focus-visible:ring-0"
+          className="h-auto border-0 bg-transparent p-0 text-sm font-mono shadow-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           placeholder={placeholder ?? `word ${position}`}
           autoComplete="off"
+          autoCorrect="off"
           spellCheck={false}
           autoCapitalize="none"
           aria-label={`Word ${position}`}
@@ -117,17 +119,19 @@ export function MnemonicGridUi({
   onWordChange,
   blankValues,
   onBlankChange,
+  onlyBlankPositions = false,
   className,
 }: MnemonicGridUiProps) {
   const gridCols =
     columns === 3
-      ? "grid-cols-3"
+      ? "grid-cols-2 sm:grid-cols-3"
       : "grid-cols-2 sm:grid-cols-4"
 
   return (
     <div className={cn("grid gap-2", gridCols, className)}>
       {words.map((word, index) => {
         const isBlank = blankPositions?.has(index) ?? false
+        if (onlyBlankPositions && !isBlank) return null
         const isEditable = editablePositions?.has(index) ?? false
 
         let slotMode: WordSlotMode = "readonly"
