@@ -84,7 +84,7 @@ function getModeConfig(mode: MnemonicFlowMode, wordCount: MnemonicWordCount): Mo
       }
     case "create":
       return {
-        title: "Create Recovery Phrase",
+        title: "Save Recovery Phrase",
         description: `Write down these ${wordCount} words in order. You will need them to recover your wallet.`,
         submitLabel: "Continue",
       }
@@ -92,7 +92,7 @@ function getModeConfig(mode: MnemonicFlowMode, wordCount: MnemonicWordCount): Mo
       return {
         title: "Import Recovery Phrase",
         description: `Enter your ${wordCount}-word recovery phrase to restore your wallet.`,
-        submitLabel: "Import Wallet",
+        submitLabel: "Continue",
       }
     case "verify":
       return {
@@ -167,7 +167,8 @@ export function MnemonicFlowUi({
       <CardContent className="flex flex-col gap-4">
         {/* Word grid */}
         <MnemonicGridUi
-          words={words}
+          words={mode === "verify" ? Array(words.length).fill("") : words}
+          onlyBlankPositions={mode === "verify"}
           columns={4}
           editablePositions={editablePositions}
           blankPositions={blankPositions}
@@ -235,7 +236,7 @@ export function MnemonicFlowUi({
 
         {/* Error message */}
         {error && (
-          <div className="flex items-start gap-3 rounded-md border border-destructive/20 bg-destructive/5 p-4">
+          <div role="alert" className="flex items-start gap-3 rounded-md border border-destructive/20 bg-destructive/5 p-4">
             <X className="mt-0.5 size-4 shrink-0 text-destructive" />
             <p className="text-sm text-destructive">{error}</p>
           </div>

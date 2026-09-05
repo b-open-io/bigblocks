@@ -8,7 +8,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 export type MnemonicFlowMode = "display" | "create" | "import" | "verify"
 
 /** Number of words in a mnemonic seed phrase */
-export type MnemonicWordCount = 12 | 24
+export type MnemonicWordCount = 12 | 15 | 18 | 21 | 24
 
 /** A verification challenge requiring the user to confirm specific word positions */
 export interface VerificationChallenge {
@@ -24,7 +24,7 @@ export interface UseMnemonicFlowOptions {
   mode: MnemonicFlowMode
   /** Pre-populated words for display/verify modes */
   words?: string[]
-  /** Number of words to generate/import (default: 12) */
+  /** Number of words to display/import (default: 12) */
   wordCount?: MnemonicWordCount
   /** Called when the flow completes with the final word list */
   onComplete?: (words: string[]) => void
@@ -96,7 +96,7 @@ function pickChallengePositions(
  *
  * Supports four modes:
  * - **display**: Read-only grid with copy-all button
- * - **create**: Shows generated words, requires confirmation checkbox
+ * - **create**: Shows supplied words, requires confirmation checkbox
  * - **import**: Editable grid for entering a seed phrase
  * - **verify**: Shows 2 random word positions the user must fill in correctly
  *
@@ -119,15 +119,15 @@ export function useMnemonicFlow({
   onCancel,
 }: UseMnemonicFlowOptions): UseMnemonicFlowReturn {
   const [words, setWords] = useState<string[]>(
-    () => initialWords ?? Array.from<string>({ length: wordCount }).fill("")
+    () => initialWords ? [...initialWords] : Array<string>(wordCount).fill("")
   )
   const [confirmed, setConfirmed] = useState(false)
   const [copied, setCopied] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Verification challenge — generated once on mount for verify mode
-  const [challenge] = useState<VerificationChallenge | null>(() => {
-    if (mode !== "verify") return null
+  // Verification challenge resets when its input phrase or mode changes.
+  const [challenge, setChallenge] = useState<VerificationChallenge | null>(() => {
+    if (mode !== "verify" || (initialWords?.length ?? wordCount) < 2) return null
     const count = initialWords?.length ?? wordCount
     return {
       positions: pickChallengePositions(count),
@@ -138,6 +138,22 @@ export function useMnemonicFlow({
   const [verificationAnswers, setVerificationAnswers] = useState<
     Record<number, string>
   >({})
+
+  // Compare content, not array identity: parent rerenders must preserve answers.
+  const inputSignature = JSON.stringify([mode, wordCount, initialWords])
+  const [previousInput, setPreviousInput] = useState(inputSignature)
+  if (previousInput !== inputSignature) {
+    setPreviousInput(inputSignature)
+    setWords(initialWords ? [...initialWords] : Array(wordCount).fill(""))
+    setConfirmed(false)
+    setCopied(false)
+    setError(null)
+    setVerificationAnswers({})
+    const count = initialWords?.length ?? wordCount
+    setChallenge(mode === "verify" && count >= 2
+      ? { positions: pickChallengePositions(count), answers: {} }
+      : null)
+  }
 
   // Ref for copy timeout cleanup
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined)
@@ -180,7 +196,7 @@ export function useMnemonicFlow({
     []
   )
 
-  // Validation
+  // Presence/challenge checks only. No mnemonic checksum or wallet derivation validation.
   const isValid = useMemo(() => {
     switch (mode) {
       case "display":
@@ -217,8 +233,11 @@ export function useMnemonicFlow({
 
   const canSubmit = useMemo(() => {
     if (mode === "display") return false
+    if (mode === "verify") return challenge !== null && challenge.positions.every(
+      (position) => Boolean(verificationAnswers[position]?.trim())
+    )
     return isValid
-  }, [mode, isValid])
+  }, [mode, isValid, challenge, verificationAnswers])
 
   const submit = useCallback(() => {
     if (!canSubmit) return
@@ -240,7 +259,7 @@ export function useMnemonicFlow({
   }, [onCancel])
 
   const copyWords = useCallback(async () => {
-    if (typeof navigator === "undefined") return
+    if (typeof navigator === "undefined" || (mode !== "display" && mode !== "create")) return
     try {
       await navigator.clipboard.writeText(words.join(" "))
       setCopied(true)
@@ -251,7 +270,7 @@ export function useMnemonicFlow({
     } catch {
       setError("Failed to copy to clipboard")
     }
-  }, [words])
+  }, [words, mode])
 
   return {
     words,
