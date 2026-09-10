@@ -1,6 +1,6 @@
 {
   "name": "bigblocks",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "BigBlocks — shadcn-compatible block registry for Bitcoin applications. Provides skills for building wallet, social, marketplace, and identity blocks using @1sat/* SDKs.",
   "author": {
     "name": "Satchmo",
