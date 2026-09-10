@@ -31,5 +31,11 @@
   "packageManager": "bun@1.0.0",
   "dependencies": {
     "zod": "^4.4.3"
+  },
+  "overrides": {
+    "@bsv/sdk": "^2.5.0"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }
