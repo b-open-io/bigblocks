@@ -1,0 +1,19 @@
+{
+  "name": "bigblocks",
+  "version": "0.0.2",
+  "description": "BigBlocks — shadcn-compatible block registry for Bitcoin applications. Provides skills for building wallet, social, marketplace, and identity blocks using @1sat/* SDKs.",
+  "author": {
+    "name": "Satchmo",
+    "url": "https://bigblocks.dev"
+  },
+  "repository": "https://github.com/b-open-io/bigblocks",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "bigblocks",
+    "shortDescription": "shadcn-compatible block registry for Bitcoin applications.",
+    "developerName": "Satchmo",
+    "websiteURL": "https://bigblocks.dev",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/logo.png"
+  }
+}
